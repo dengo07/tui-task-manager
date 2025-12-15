@@ -33,18 +33,18 @@ class ViewController{
             mvwprintw(stdscr,0,0,"#TODO-LIST APP# -- [UP][DOWN] for navigating -- [ENTER] to open list or toggle -- ['q'] for back\n -- ['c'] for new list or task -- ['d'] for delete");
         }
 
-        void renderMainList(int highlight,std::vector<TodoList> *lists,int maxy , int maxx ){
+        void renderMainList(int highlight,ListOfLists *lists,int maxy , int maxx ){
             curs_set(0);
             werase(MainListWindow);
             wresize(MainListWindow,maxy/2,maxx/2);
             move_panel(MainListPanel,maxy/4,maxx/4);
             box(MainListWindow,'|','-');
             mvwprintw(MainListWindow,0,0,"Todo Lists");
-            for(int i =0; i<(*lists).size(); i++){
+            for(int i =0; i<lists->lists.size(); i++){
                 if(highlight == i){
                     wattron(MainListWindow,A_REVERSE);
                 }
-                mvwprintw(MainListWindow,i+2,1,(*lists).at(i).title.c_str());
+                mvwprintw(MainListWindow,i+2,1,lists->lists.at(i).title.c_str());
                 if(highlight == i){
                     wattroff(MainListWindow,A_REVERSE);
                 }
@@ -110,7 +110,7 @@ class ViewController{
         }
 
 
-        void render(AppState s,int highlight,TodoList* selectedList,std::vector<TodoList>* lists,int maxy, int maxx,std::string buffer){
+        void render(AppState s,int highlight,TodoList* selectedList,ListOfLists* lists,int maxy, int maxx,std::string buffer){
             clear();
             renderTitle();
             switch (s)

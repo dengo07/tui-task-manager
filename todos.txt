@@ -1,0 +1,4 @@
+LIST algorithms homework
+TODO 1 study dp
+ENDLIST
+

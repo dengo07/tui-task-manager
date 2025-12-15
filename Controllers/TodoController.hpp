@@ -13,7 +13,7 @@ class TodoController
 
 private:
     AppState currentState =  AppState::MAIN_LIST;
-    std::vector<TodoList>* lists;
+    ListOfLists* lists;
     TodoList* selectedList;
     std::string buffer = "";
     ViewController* viewController;
@@ -53,7 +53,7 @@ private:
             }
             break;
         case KEY_DOWN:
-            if(highlight < (*lists).size()-1){
+            if(highlight < lists->lists.size()-1){
                 highlight++;
             }
             break;
@@ -61,8 +61,8 @@ private:
             setState(AppState::MAIN_INPUT_MODAL);
             break;
         case 'd':
-            if(lists->size()>0){
-                lists->erase(lists->begin() + highlight);
+            if(lists->lists.size()>0){
+                lists->lists.erase(lists->lists.begin() + highlight);
             }
             highlight =0;
             break;
@@ -71,7 +71,7 @@ private:
             running = false;
             break;
         case '\n':
-            selectedList = &(*lists)[highlight];
+            selectedList = &(lists->lists[highlight]);
             setState(AppState::TODO_LIST);
             highlight =0;
             break;
@@ -123,7 +123,7 @@ private:
                 if(buffer.size() >0){
                     TodoList newList;
                     newList.title = buffer;
-                    lists->push_back(newList);
+                    lists->lists.push_back(newList);
                     buffer = "";
                 } 
                 setState(AppState::MAIN_LIST);
@@ -176,7 +176,7 @@ private:
 
 public:
 
-   TodoController(std::vector<TodoList>* l,ViewController* view){
+   TodoController(ListOfLists* l,ViewController* view){
         lists = l;
         viewController = view;
    }
@@ -189,6 +189,7 @@ public:
     }
 
     void run(){
+        lists->getFromFile();
         int x,y;
         getmaxyx(stdscr,y,x);
         viewController->render(currentState,highlight,selectedList,lists,y,x,buffer);
@@ -198,6 +199,7 @@ public:
             getmaxyx(stdscr,y,x);
             viewController->render(currentState,highlight,selectedList,lists,y,x,buffer);
         }
+        lists->saveToFile();
         endwin();
     }
 };

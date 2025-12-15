@@ -18,35 +18,8 @@ void initialize(){
 
 int main(){
     initialize();
-    std::vector<TodoList> lists = {
+    ListOfLists lists;
 
-    {
-        "Gunluk",
-        {
-            {"Su iç", true},
-            {"Kod yaz", false},
-            {"Yürüyüş yap", false}
-        }
-    },
-
-    {
-        "Okul",
-        {
-            {"Veri Yapilari ödevini bitir", false},
-            {"OS notlarini oku", true},
-            {"Lineer cebir tekrar", false}
-        }
-    },
-
-    {
-        "Projeler",
-        {
-            {"ncurses TUI tasarla", true},
-            {"MVC mimarisini oturt", false},
-            {"State machine refactor", false}
-        }
-    }
-};
 
 
     ViewController* view  = new ViewController();
@@ -54,7 +27,7 @@ int main(){
  
 
     todoControl->run();
-
+    
     return 0;
 
 }
