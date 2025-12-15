@@ -33,57 +33,108 @@ class ViewController{
             mvwprintw(stdscr,0,0,"#TODO-LIST APP# -- [UP][DOWN] for navigating -- [ENTER] to open list or toggle -- ['q'] for back\n -- ['c'] for new list or task -- ['d'] for delete");
         }
 
-        void renderMainList(int highlight,ListOfLists *lists,int maxy , int maxx ){
-            curs_set(0);
-            werase(MainListWindow);
-            wresize(MainListWindow,maxy/2,maxx/2);
-            move_panel(MainListPanel,maxy/4,maxx/4);
-            box(MainListWindow,'|','-');
-            mvwprintw(MainListWindow,0,0,"Todo Lists");
-            for(int i =0; i<lists->lists.size(); i++){
-                if(highlight == i){
-                    wattron(MainListWindow,A_REVERSE);
-                }
-                mvwprintw(MainListWindow,i+2,1,lists->lists.at(i).title.c_str());
-                if(highlight == i){
-                    wattroff(MainListWindow,A_REVERSE);
-                }
-            }
-            top_panel(MainListPanel);
-            hide_panel(TodoListPanel);
-            hide_panel(InputModalPanel);
-            hide_panel(ExitPromptPanel);
+    void renderMainList(int highlight, ListOfLists* lists, int maxy, int maxx)
+    {
+        curs_set(0);
+
+        werase(MainListWindow);
+
+        int win_h = maxy / 2;
+        int win_w = maxx / 2;
+
+        wresize(MainListWindow, win_h, win_w);
+        move_panel(MainListPanel, maxy / 4, maxx / 4);
+
+        box(MainListWindow, '|', '-');
+        mvwprintw(MainListWindow, 0, 2, " Todo Lists ");
+
+        int visible_rows = win_h - 3; // header + border
+        int total = lists->lists.size();
+
+        int start_index = 0;
+
+        if (highlight >= visible_rows) {
+            start_index = highlight - visible_rows + 1;
         }
 
-        void renderTodoList(int highlight,TodoList *selectedList,int maxy , int maxx){
-            curs_set(0);
-            werase(TodoListWindow);
-            wresize(TodoListWindow,maxy/2,maxx/2);
-            move_panel(TodoListPanel,maxy/4,maxx/4);
-            box(TodoListWindow,'|','-');
-            mvwprintw(TodoListWindow,0,0,selectedList->title.c_str());
-            for(int i =0; i<(*selectedList).todos.size(); i++){
-                if(highlight == i){
-                    wattron(TodoListWindow,A_REVERSE);
-                }
-                mvwprintw(
-                    TodoListWindow,
-                    i+2,
-                    1,
-                    "%s [%s]",
-                    (*selectedList).todos[i].title.c_str(),
-                    (*selectedList).todos[i].done ? "x" : " "
-                );
+        if (start_index < 0) start_index = 0;
+        if (start_index > total - visible_rows)
+            start_index = std::max(0, total - visible_rows);
 
-                if(highlight == i){
-                    wattroff(TodoListWindow,A_REVERSE);
-                }
-            }
-            top_panel(TodoListPanel);
-            hide_panel(MainListPanel);
-            hide_panel(InputModalPanel);
-            hide_panel(ExitPromptPanel);
+        for (int i = 0; i < visible_rows; i++) {
+            int idx = start_index + i;
+            if (idx >= total) break;
+
+            if (idx == highlight)
+                wattron(MainListWindow, A_REVERSE);
+
+            mvwprintw(MainListWindow, i + 2, 1,
+                    "%s", lists->lists[idx].title.c_str());
+
+            if (idx == highlight)
+                wattroff(MainListWindow, A_REVERSE);
         }
+
+        top_panel(MainListPanel);
+        hide_panel(TodoListPanel);
+        hide_panel(InputModalPanel);
+        hide_panel(ExitPromptPanel);
+    }
+
+
+    void renderTodoList(int highlight, TodoList* selectedList, int maxy, int maxx)
+    {
+        curs_set(0);
+        werase(TodoListWindow);
+
+        int win_h = maxy / 2;
+        int win_w = maxx / 2;
+
+        wresize(TodoListWindow, win_h, win_w);
+        move_panel(TodoListPanel, maxy / 4, maxx / 4);
+
+        box(TodoListWindow, '|', '-');
+        mvwprintw(TodoListWindow, 0, 2, " %s ", selectedList->title.c_str());
+
+        int total = selectedList->todos.size();
+        int visible_rows = win_h - 3; // header + border
+
+        int start_index = 0;
+
+        if (highlight >= visible_rows)
+            start_index = highlight - visible_rows + 1;
+
+        if (start_index < 0) start_index = 0;
+        if (start_index > total - visible_rows)
+            start_index = std::max(0, total - visible_rows);
+
+        //RENDER VISIBLE PART
+        for (int i = 0; i < visible_rows; i++) {
+            int idx = start_index + i;
+            if (idx >= total) break;
+
+            if (idx == highlight)
+                wattron(TodoListWindow, A_REVERSE);
+
+            mvwprintw(
+                TodoListWindow,
+                i + 2,
+                1,
+                "%s [%s]",
+                selectedList->todos[idx].title.c_str(),
+                selectedList->todos[idx].done ? "x" : " "
+            );
+
+            if (idx == highlight)
+                wattroff(TodoListWindow, A_REVERSE);
+        }
+
+        top_panel(TodoListPanel);
+        hide_panel(MainListPanel);
+        hide_panel(InputModalPanel);
+        hide_panel(ExitPromptPanel);
+    }
+
 
         void renderInputModal(int maxy , int maxx,std::string buffer){
             curs_set(1);
