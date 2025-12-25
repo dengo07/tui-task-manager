@@ -1,29 +1,24 @@
 #ifndef MODELS_HPP
 #define MODELS_HPP
 
-#include<string>
-#include<vector>
+#include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
+#include <cstdlib>
 
-
-
-struct Todo
-{
-    std::string title = "";
+struct Todo {
+    std::string title;
     bool done = false;
-
-
-
 };
 
+struct TodoList {
+    std::string title;
+    std::vector<Todo> todos;
 
-struct TodoList
-{
-    std::string title = "";
-    std::vector<Todo> todos={};
     void toggle(int index) {
-        if (index >= 0 && index < todos.size()) {
+        if (index >= 0 && index < (int)todos.size()) {
             todos[index].done = !todos[index].done;
         }
     }
@@ -31,20 +26,31 @@ struct TodoList
     void add(const std::string& t) {
         todos.push_back({t, false});
     }
-
 };
 
-
-struct ListOfLists
-{
+struct ListOfLists {
     std::vector<TodoList> lists;
 
+    static std::string dataPath() {
+        const char* xdg = std::getenv("XDG_DATA_HOME");
+        std::string base;
+
+        if (xdg)
+            base = xdg;
+        else
+            base = std::string(std::getenv("HOME")) + "/.local/share";
+
+        std::filesystem::path dir = base + "/todo";
+        std::filesystem::create_directories(dir);
+
+        return (dir / "todos.txt").string();
+    }
+
     void getFromFile() {
-        std::ifstream file("todos.txt");
+        std::ifstream file(dataPath());
         if (!file.is_open()) return;
 
         lists.clear();
-
         std::string line;
         TodoList currentList;
 
@@ -74,13 +80,10 @@ struct ListOfLists
                 lists.push_back(currentList);
             }
         }
-
-        file.close();
     }
 
-
     void saveToFile() {
-        std::ofstream file("todos.txt");
+        std::ofstream file(dataPath());
         if (!file.is_open()) return;
 
         for (const auto& list : lists) {
@@ -88,16 +91,13 @@ struct ListOfLists
 
             for (const auto& todo : list.todos) {
                 file << "TODO "
-                    << todo.done << " "
-                    << todo.title << "\n";
+                     << todo.done << " "
+                     << todo.title << "\n";
             }
 
             file << "ENDLIST\n\n";
         }
-
-        file.close();
     }
 };
 
-
-#endif
+#endif // MODELS_HPP
