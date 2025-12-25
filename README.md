@@ -137,6 +137,4 @@ make uninstall
 
 During uninstallation, the script will ask if you wish to remove your configuration and saved data located in `~/.local/share/todo`.
 
-```
 
-```
