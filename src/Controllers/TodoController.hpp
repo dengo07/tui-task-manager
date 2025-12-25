@@ -71,9 +71,11 @@ private:
             running = false;
             break;
         case '\n':
-            selectedList = &(lists->lists[highlight]);
-            setState(AppState::TODO_LIST);
-            highlight =0;
+            if(lists->lists.size() > 0){ 
+                selectedList = &(lists->lists[highlight]);
+                setState(AppState::TODO_LIST);
+                highlight =0;
+            }
             break;
         default:
             break;
@@ -106,7 +108,9 @@ private:
             highlight = 0;
             break;
         case '\n':
-            (*selectedList).toggle(highlight);
+            if(selectedList->todos.size() > 0){
+                (*selectedList).toggle(highlight);
+            }
             break;
         default:
             break;
