@@ -43,8 +43,8 @@ The project includes an automated installation script.
 
 1. **Clone the repository:**
 ```bash
-git clone <repository_url>
-cd <repository_name>
+git clone https://github.com/dengo07/tui-task-manager
+cd tui-task-manager
 
 ```
 
