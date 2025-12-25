@@ -21,3 +21,4 @@ mkdir -p "$DATA_DIR"
 
 echo "✅ Installation complete!"
 echo "➡ Run with: $APP_NAME"
+make clean
